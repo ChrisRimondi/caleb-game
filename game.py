@@ -55,6 +55,8 @@ def main():
                         start_game()
                 if event.key == pygame.K_r and state == 'playing' and player.alive:
                     player.activate_powerup(arena, bullets, wave_manager.enemies)
+                if event.key == pygame.K_e and state == 'playing' and player.alive:
+                    player.swing_sabre(mouse_world, wave_manager.enemies)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1 and state == 'playing' and player.alive:

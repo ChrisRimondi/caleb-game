@@ -55,6 +55,11 @@ class Player:
         self.jetpack_active = False
         self.jetpack_timer  = 0.0
 
+        # Sabre
+        self.has_sabre   = False
+        self.sabre_cd    = 0.0
+        self.sabre_swing = 0.0   # visual flash timer
+
         # Visual
         self.hit_flash = 0.0
 
@@ -99,6 +104,12 @@ class Player:
             self.mg_accum += dt
         else:
             self.mg_accum = 0.0
+
+        # --- Sabre cooldown ---
+        if self.sabre_cd > 0:
+            self.sabre_cd -= dt
+        if self.sabre_swing > 0:
+            self.sabre_swing -= dt
 
         # --- Jetpack ---
         if self.jetpack_active:
@@ -164,7 +175,9 @@ class Player:
         self.mg_accum   = 0.0
         self.powerup_queue.clear()
         self.jetpack_active = False
-        self.hit_flash = 0.0
+        self.sabre_cd    = 0.0
+        self.sabre_swing = 0.0
+        self.hit_flash   = 0.0
 
     # ------------------------------------------------------------------
     def add_powerup(self, ptype):
@@ -179,6 +192,24 @@ class Player:
             self.jetpack_timer  = 5.0
         elif ptype == 'bomb':
             self._activate_bomb(enemies)
+
+    def swing_sabre(self, mouse_world, enemies):
+        if not self.has_sabre or self.sabre_cd > 0 or not self.alive:
+            return
+        mx, my = mouse_world
+        aim_angle = math.atan2(my - self.y, mx - self.x)
+        for e in enemies:
+            if not e.alive:
+                continue
+            d = math.sqrt((self.x - e.x) ** 2 + (self.y - e.y) ** 2)
+            if d > 2.0:
+                continue
+            ea   = math.atan2(e.y - self.y, e.x - self.x)
+            diff = abs(math.atan2(math.sin(ea - aim_angle), math.cos(ea - aim_angle)))
+            if diff <= math.pi / 2:   # 180-degree arc centred on mouse
+                e.take_damage(3)
+        self.sabre_cd    = 0.5
+        self.sabre_swing = 0.15
 
     def _activate_bomb(self, enemies):
         for e in list(enemies):
@@ -220,6 +251,16 @@ class Player:
         # Jetpack glow
         if self.jetpack_active:
             pygame.draw.circle(surface, (80, 200, 255, 80), (px, py), r + 4, 2)
+
+        # Sabre slash arc
+        if self.sabre_swing > 0 and self.has_sabre:
+            mx, my = mouse_screen
+            length  = max(1, math.sqrt((mx - px) ** 2 + (my - py) ** 2))
+            dx, dy  = (mx - px) / length, (my - py) / length
+            slash_r = int(2.0 * SCALE)
+            ex      = px + int(dx * slash_r)
+            ey      = py + int(dy * slash_r)
+            pygame.draw.line(surface, (255, 230, 80), (px, py), (ex, ey), 4)
 
         # Name tag
         font = get_font(16)

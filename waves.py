@@ -62,6 +62,8 @@ class WaveManager:
 
         if not any(e.alive for e in self.enemies):
             self.wave_active = False
+            if self.current_wave == 4:          # end of wave 5 — grant Sabre
+                self.player.has_sabre = True
             if self.current_wave >= 9:
                 return 'victory'
             self.between_waves = True

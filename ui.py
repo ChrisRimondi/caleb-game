@@ -56,6 +56,16 @@ def draw_hud(screen, player, wave_manager, win_w, win_h):
 
     _hline(screen, px, pw, y); y += 10
 
+    # Sabre
+    if player.has_sabre:
+        _hline(screen, px, pw, y); y += 10
+        screen.blit(_f(20).render('SABRE  [E to swing]', True, YELLOW), (px, y)); y += 22
+        if player.sabre_cd > 0:
+            st = _f(18).render(f'  cooldown: {player.sabre_cd:.1f}s', True, ORANGE)
+        else:
+            st = _f(18).render('  ready', True, LIME)
+        screen.blit(st, (px, y)); y += 26
+
     # Power-ups
     screen.blit(_f(20).render('POWER-UPS  [R to use]', True, CYAN), (px, y)); y += 22
     if player.jetpack_active:
@@ -104,6 +114,7 @@ def draw_start_screen(screen, win_w, win_h):
         ('Left Click',    'Shotgun  —  2 dmg, 25 shots, 10 s reload'),
         ('Hold R-Click',  'Machine Gun  —  1 dmg, 85 shots, 10 s reload'),
         ('R',             'Use next power-up from queue'),
+        ('E',             'Swing Sabre  —  3 dmg, melee range (unlocks wave 5)'),
         ('Walk over',     'Cyan = Jetpack  |  Orange = Bomb  |  Green = +5 HP'),
         ('Bomb warning',  'Explodes 5-unit radius — hurts YOU too!'),
         ('Death',         'Restart current wave, lose all power-ups'),
