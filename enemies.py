@@ -1,7 +1,7 @@
 import math
 import random
 import pygame
-from constants import *
+from constants import *  # includes get_font
 
 
 # ---------------------------------------------------------------------------
@@ -36,6 +36,7 @@ class EnemyBullet:
 class BaseEnemy:
     COLOR  = WHITE
     RADIUS = 0.65
+    LABEL  = 'Enemy'
 
     def __init__(self, x, y, player):
         self.x, self.y  = float(x), float(y)
@@ -91,6 +92,14 @@ class BaseEnemy:
         pygame.draw.circle(surface, col, (px, py), r)
         pygame.draw.circle(surface, WHITE, (px, py), r, 2)
         self._draw_hp_bar(surface, px, py, r)
+        self._draw_label(surface, px, py, r)
+
+    def _draw_label(self, surface, px, py, r):
+        font = get_font(16)
+        tag  = font.render(self.LABEL, True, WHITE)
+        tx   = px - tag.get_width() // 2
+        ty   = py - r - 18
+        surface.blit(tag, (tx, ty))
 
     def _draw_hp_bar(self, surface, px, py, r):
         bw = r * 2 + 4
@@ -108,6 +117,7 @@ class BaseEnemy:
 # ---------------------------------------------------------------------------
 class RangeEnemy(BaseEnemy):
     COLOR = (50, 190, 60)
+    LABEL = 'Ranger'
 
     def __init__(self, x, y, player):
         super().__init__(x, y, player)
@@ -137,6 +147,7 @@ class RangeEnemy(BaseEnemy):
 # ---------------------------------------------------------------------------
 class MeleeEnemy(BaseEnemy):
     COLOR = (210, 55, 55)
+    LABEL = 'Melee'
 
     def __init__(self, x, y, player):
         super().__init__(x, y, player)
@@ -158,6 +169,7 @@ class MeleeEnemy(BaseEnemy):
 # ---------------------------------------------------------------------------
 class CasterEnemy(BaseEnemy):
     COLOR = (165, 55, 225)
+    LABEL = 'Caster'
 
     def __init__(self, x, y, player):
         super().__init__(x, y, player)

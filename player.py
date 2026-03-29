@@ -1,7 +1,7 @@
 import math
 import random
 import pygame
-from constants import *
+from constants import *  # includes get_font
 
 
 class PlayerBullet:
@@ -220,3 +220,8 @@ class Player:
         # Jetpack glow
         if self.jetpack_active:
             pygame.draw.circle(surface, (80, 200, 255, 80), (px, py), r + 4, 2)
+
+        # Name tag
+        font = get_font(16)
+        tag  = font.render('Player', True, WHITE)
+        surface.blit(tag, (px - tag.get_width() // 2, py - r - 18))

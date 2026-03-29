@@ -27,6 +27,14 @@ WALL_COLOR   = (80,  80,  95)
 PILLAR_COLOR = (130, 110, 90)
 
 
+_font_cache = {}
+def get_font(size):
+    if size not in _font_cache:
+        import pygame
+        _font_cache[size] = pygame.font.SysFont(None, size)
+    return _font_cache[size]
+
+
 def w2s(wx, wy):
     """World (x, y) → screen pixel (px, py).
     World origin is arena centre; y-up. Screen y is inverted."""
